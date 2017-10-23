@@ -17,6 +17,7 @@ namespace AspNetCoreTodo.Controllers
             _todoItemService = todoItemService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             // Get to-do items from database
@@ -31,6 +32,44 @@ namespace AspNetCoreTodo.Controllers
             // Pass the view to a model and render
 
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddItem(NewTodoItem newItem)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var successful = await _todoItemService.AddItemAsync(newItem);
+
+            if (!successful)
+            {
+                return BadRequest(new { error = "Could not add item"});
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkDone(Guid id)
+        {
+            if (id == Guid.Empty)
+            {
+                return BadRequest();
+            }
+
+            var successful = await _todoItemService.MarkDoneAsync(id);
+
+            if (!successful)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
         }
     }
 }

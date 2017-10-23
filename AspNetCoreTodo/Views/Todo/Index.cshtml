@@ -8,7 +8,7 @@
 
 <div class="panel panel-default todo-panel">
     <div class="panel-heading">@ViewData["Title"]</div>
-    <table class="table table-hover table-striped">
+    <table class="table table-hover">
         <thead>
             <tr>
                 <td>&#x2714;</td>
@@ -27,6 +27,7 @@
     </table>
     <div class="panel-footer add-item-form">
         <form>
+            @Html.AntiForgeryToken()
             <div id="add-item-error" class="text-danger"></div>
             <lablel for="add-item-title">Add a new item:</lablel>
             <input id="add-item-title"/>

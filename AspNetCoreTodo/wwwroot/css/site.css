@@ -42,3 +42,7 @@ table tr.done {
     text-decoration: line-through;
     color: #888;
 }
+
+.done-checkbox {
+    visibility: visible;
+}
