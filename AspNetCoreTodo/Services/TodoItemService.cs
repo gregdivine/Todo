@@ -17,11 +17,12 @@ namespace AspNetCoreTodo.Services
             _context = context;
         }
 
-        public async Task<bool> AddItemAsync(NewTodoItem newItem)
+        public async Task<bool> AddItemAsync(NewTodoItem newItem, ApplicationUser user)
         {
             var entity = new TodoItem
             {
                 Id = Guid.NewGuid(),
+                OwnerId = user.Id,
                 IsDone = false,
                 Title = newItem.Title,
                 DueAt = DateTimeOffset.Now.AddDays(3)
@@ -33,19 +34,19 @@ namespace AspNetCoreTodo.Services
             return saveResult == 1;
         }
 
-        public async Task<IEnumerable<TodoItem>> GetIncompleteItemsAsync()
+        public async Task<IEnumerable<TodoItem>> GetIncompleteItemsAsync(ApplicationUser user)
         {
             var items = await _context.Items
-                .Where(x => x.IsDone == false)
+                .Where(x => x.IsDone == false && x.OwnerId == user.Id)
                 .ToArrayAsync();
 
             return items;
         }
 
-        public async Task<bool> MarkDoneAsync(Guid id)
+        public async Task<bool> MarkDoneAsync(Guid id, ApplicationUser user)
         {
             var entity = await _context.Items
-                .FirstOrDefaultAsync(t => t.Id == id);
+                .FirstOrDefaultAsync(t => t.Id == id && t.Id.ToString() == user.Id);
 
             if (entity == null) return false;
 

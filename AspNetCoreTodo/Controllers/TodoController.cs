@@ -5,23 +5,34 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using AspNetCoreTodo.Services;
 using AspNetCoreTodo.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace AspNetCoreTodo.Controllers
 {
+    //[Authorize]
     public class TodoController : Controller
     {
         private readonly ITodoItemService _todoItemService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public TodoController(ITodoItemService todoItemService)
+        public TodoController(ITodoItemService todoItemService, UserManager<ApplicationUser> userManager)
         {
             _todoItemService = todoItemService;
+            _userManager = userManager;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return Challenge();
+            }
+            
             // Get to-do items from database
-            var todoItems = await _todoItemService.GetIncompleteItemsAsync();
+            var todoItems = await _todoItemService.GetIncompleteItemsAsync(currentUser);
 
             // Put items into a model
             var model = new TodoViewModel
@@ -43,7 +54,13 @@ namespace AspNetCoreTodo.Controllers
                 return BadRequest(ModelState);
             }
 
-            var successful = await _todoItemService.AddItemAsync(newItem);
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return Unauthorized();
+            }
+
+            var successful = await _todoItemService.AddItemAsync(newItem, currentUser);
 
             if (!successful)
             {
@@ -62,7 +79,13 @@ namespace AspNetCoreTodo.Controllers
                 return BadRequest();
             }
 
-            var successful = await _todoItemService.MarkDoneAsync(id);
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return Unauthorized();
+            }
+
+            var successful = await _todoItemService.MarkDoneAsync(id, currentUser);
 
             if (!successful)
             {
