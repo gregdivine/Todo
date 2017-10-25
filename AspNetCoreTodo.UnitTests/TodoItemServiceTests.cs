@@ -3,8 +3,6 @@ using AspNetCoreTodo.Models;
 using AspNetCoreTodo.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using System.Linq;
