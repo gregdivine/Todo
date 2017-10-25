@@ -34,5 +34,34 @@ namespace AspNetCoreTodo.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            if (ModelState.IsValid)
+            {
+                var usr = _userManager.Users.FirstOrDefault(u => u.Id == id);
+
+                if ( usr != null )
+                {
+                    var isAdmin = await _userManager.IsInRoleAsync(usr, Constants.AdministratorRole);
+
+                    if (!isAdmin)
+                    {
+                        var res = await _userManager.DeleteAsync(usr);
+
+                        if (res.Succeeded)
+                        {
+                            TempData["message"] = "Done!";
+                            return RedirectToAction("Index");
+                        }
+                    }
+                }
+            }
+
+            TempData["message"] = "Can't do this!";
+            return RedirectToAction("Index");
+        }
     }
 }

@@ -6,6 +6,20 @@
 
 <h2>@ViewData["Title"]</h2>
 
+<div asp-validation-summary="All" class="text-danger"></div>
+
+@if (TempData["message"] != null)
+{
+    if (TempData["message"].ToString() == "Done!")
+    {
+        <div class="alert alert-success">@TempData["message"]</div>
+    }
+    else
+    {
+        <div class="alert alert-danger">@TempData["message"]</div>
+    }
+}
+
 <h3>Administrators</h3>
 
 <table class="table">
@@ -19,7 +33,12 @@
         @foreach (var user in Model.Administrators)
         {
             <tr>
-                <td>@user.Id</td>
+                <td>
+                    @user.Id
+                    <form  method="post" asp-action="DeleteUser" asp-route-id="@user.Id" style="display:inline-block;">
+                        <input type="submit" value="Delete" class="btn btn-danger btn-xs" />
+                    </form>
+                </td>
                 <td>@user.Email</td>
             </tr>
         }
@@ -39,7 +58,12 @@
         @foreach (var user in Model.Everyone)
         {
             <tr>
-                <td>@user.Id</td>
+                <td>
+                    @user.Id
+                    <form method="post" asp-action="DeleteUser" asp-route-id="@user.Id" style="display:inline-block;">
+                        <input type="submit" value="Delete" class="btn btn-danger btn-xs" />
+                    </form>
+                </td>
                 <td>@user.Email</td>
             </tr>
         }

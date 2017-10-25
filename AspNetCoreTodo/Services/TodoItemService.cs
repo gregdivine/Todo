@@ -46,7 +46,7 @@ namespace AspNetCoreTodo.Services
         public async Task<bool> MarkDoneAsync(Guid id, ApplicationUser user)
         {
             var entity = await _context.Items
-                .FirstOrDefaultAsync(t => t.Id == id && t.Id.ToString() == user.Id);
+                .FirstOrDefaultAsync(t => t.Id == id && t.OwnerId == user.Id);
 
             if (entity == null) return false;
 
